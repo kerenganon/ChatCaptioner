@@ -48,12 +48,13 @@ for root, dirs, files in os.walk(VIDEO_FOLDER):
     for filename in files:
         full_path = os.path.join(root, filename)
         video_files.append(full_path)
-
+        print(full_path)
 
 # extract the video frames with uniform sampling
 video_list = []
 for video_path in video_files[:VIDEO_LIMIT]:
     video_id = video_path.split("/")[-1].replace(".mp4","")
+    print(data_file.keys(), video_id)
     if video_id in data_file.keys():
         new_json_file = {}
         new_json_file["video_id"] = video_id
@@ -61,26 +62,31 @@ for video_path in video_files[:VIDEO_LIMIT]:
         new_json_file["annotation"] = data_file[video_id]
         
         try:
-            sampled_frames = read_video_sampling(video_path, num_frames=8)
+            sampled_frames = read_video_sampling(video_path, num_frames=100)
             new_json_file["features"]=sampled_frames
             video_list.append(new_json_file)
         except:
-            pass
+            print("Error Extracting Features")
 
 
+# print(video_list)
 
 for sample in video_list:
     video_id = sample["video_id"]
     features = sample["features"]
     output = sample["annotation"]["folder"]
-
+    print(video_id)
     if not os.path.exists(OUTPUT_FOLDER+output):
         os.makedirs(OUTPUT_FOLDER+output)
     with open(OUTPUT_FOLDER+output+"/"+video_id+".txt","w") as f:
-        sub_summaries = caption_for_video(blip2s['FlanT5 XXL'], features, print_mode="chat",n_rounds=30, model='gpt-3.5-turbo')
-        caption =  sample["annotation"]["caption"]
-        f.write("ground truth: "+ caption+"\n\n\n")
-        f.write("chatCaptioner: " +sub_summaries["ChatCaptioner"]["caption"]+"\n\n\n")
-        f.write("chat log:\n")
-        for element in sub_summaries["ChatCaptioner"]["chat"]:
-            f.write(element["content"]+"\n")
+        for i, feat in enumerate(features):
+            sub_summaries = caption_for_video(blip2s['FlanT5 XXL'], [feat], print_mode="no",n_rounds=1, model='gpt-3.5-turbo')
+            f.write("Frame: " + str(i) + ": " + sub_summaries["BLIP2+OurPrompt"]["caption"] + "\n")
+            print("Frame: " + str(i) + ": " + sub_summaries["BLIP2+OurPrompt"]["caption"])
+        # sub_summaries = caption_for_video(blip2s['FlanT5 XXL'], features, print_mode="chat",n_rounds=30, model='gpt-3.5-turbo')
+        # caption =  sample["annotation"]["caption"]
+        # f.write("ground truth: "+ caption+"\n\n\n")
+        # f.write("chatCaptioner: " +sub_summaries["ChatCaptioner"]["caption"]+"\n\n\n")
+        # f.write("chat log:\n")
+        # for element in sub_summaries["ChatCaptioner"]["chat"]:
+        #     f.write(element["content"]+"\n")

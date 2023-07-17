@@ -60,7 +60,8 @@ ANSWER_INSTRUCTION = 'Answer given questions with the following restrictions. (1
 
 SUB_ANSWER_INSTRUCTION = 'Answer: '  # template following blip2 huggingface demo
 
-FIRST_QUESTION = 'Frame_1: Describe it in details.'
+FIRST_QUESTION = 'Frame_1: Describe what each person in the frame is doing, in details.'
+# FIRST_QUESTION = 'Frame_1: Describe it in details.'
 
 
 
@@ -151,7 +152,7 @@ def prepare_chatgpt_message(task_prompt, questions, answers, sub_prompt):
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def call_chatgpt(chatgpt_messages, max_tokens=40, model="gpt-3.5-turbo"):
     # print("chatgpt message",chatgpt_messages)
-    response = openai.ChatCompletion.create(model=model, messages=chatgpt_messages, temperature=0.6, max_tokens=max_tokens)
+    response = openai.ChatCompletion.create(api_key="API_KEY",model=model, messages=chatgpt_messages, temperature=0.6, max_tokens=max_tokens)
     reply = response['choices'][0]['message']['content']
     total_tokens = response['usage']['total_tokens']
     return reply, total_tokens
@@ -345,8 +346,9 @@ def caption_for_video(blip2, video, model, n_rounds=30, n_blip2_context=0, print
         n_blip2_context=n_blip2_context, 
         model=model,
         print_mode=print_mode)
-    summary, summary_prompt, n_token_sum = summarize_chat(questions, answers,video, model=model)
-    results['ChatCaptioner'] = {'caption': summary, 'chat': summary_prompt, 'n_token': n_token_chat + n_token_sum}
+
+    # summary, summary_prompt, n_token_sum = summarize_chat(questions, answers,video, model=model)
+    # results['ChatCaptioner'] = {'caption': answers[0], 'chat': None, 'n_token': n_token_chat}
     results['BLIP2+OurPrompt'] = {'caption': answers[0]}
 
     

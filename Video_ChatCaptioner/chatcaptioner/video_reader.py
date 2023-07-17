@@ -343,7 +343,7 @@ def read_video_sampling(filename, num_frames):
 
 
     # Calculate the step size for sampling frames
-    step_size = num_total_frames // num_frames
+    step_size = 1
     
     # Initialize a list to store the sampled frames
     sampled_frames = []

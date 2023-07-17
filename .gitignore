@@ -6,4 +6,8 @@ datasets
 datasets_archive
 experiments
 __pycache__
+# data
+Video_ChatCaptioner/stc/
+# output
+Video_ChatCaptioner/output
 

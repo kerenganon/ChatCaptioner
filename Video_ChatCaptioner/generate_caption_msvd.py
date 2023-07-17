@@ -64,7 +64,7 @@ for video_path in video_files[:VIDEO_LIMIT]:
         new_json_file["video_path"] = video_path
         new_json_file["annotation"] = video_caption[video_id]
         try:
-            sampled_frames = read_video_sampling(video_path, num_frames=8)
+            sampled_frames = read_video_sampling(video_path, num_frames=50)
             new_json_file["features"]=sampled_frames
             video_list.append(new_json_file)
         except:
