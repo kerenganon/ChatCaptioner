@@ -1,5 +1,6 @@
 
 .idea
+.vscode/**
 .DS_Store
 .ipynb_checkpoints
 datasets
@@ -10,4 +11,4 @@ __pycache__
 Video_ChatCaptioner/stc/
 # output
 Video_ChatCaptioner/output
-
+output/**

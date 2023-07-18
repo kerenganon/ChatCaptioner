@@ -12,12 +12,33 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "stc",
-                "stc.csv",
+                "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos",
+                "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos.csv",
                 "output/",
-                "6"
+                "400",
+                ""
             ]
             
+        },
+        {
+            "name": "Pyhton: Video_ChatCaptioner/helper_methods.py",
+            "type": "python",
+            "request": "launch",
+            "program": "Video_ChatCaptioner/helper_methods.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Pyhton: Video_ChatCaptioner/anomalies_with_llm.py",
+            "type": "python",
+            "request": "launch",
+            "program": "Video_ChatCaptioner/anomalies_with_llm.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "-c",
+                "Video_ChatCaptioner/output/stc/01_0014.mp4"
+            ]
         }
     ]
 }
