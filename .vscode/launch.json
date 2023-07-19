@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos",
+                "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/frames",
                 "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos.csv",
                 "output/",
                 "400",
@@ -37,7 +37,9 @@
             "justMyCode": true,
             "args": [
                 "-c",
-                "Video_ChatCaptioner/output/stc/01_0014.mp4"
+                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/captions",
+                "-o",
+                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/npys"
             ]
         }
     ]

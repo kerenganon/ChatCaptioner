@@ -48,3 +48,4 @@ dependencies:
     - notebook
     - gradio
     - opencv-python
+    - scikit-image
