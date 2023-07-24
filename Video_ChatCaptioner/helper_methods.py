@@ -94,9 +94,12 @@ def get_testing_numpy_frames(frames_path):
         PIL.Image list: a list of frames in frames_path 
     """    
     frames = []
-    for folder in os.listdir(frames_path):
+    frame_names = os.listdir(frames_path)
+    frame_names.sort()
+    # we sort the names since the order is important - later on we enumarate over the frames.
+    for frame_name in frame_names:
         try:
-            frame = imread(frames_path + '/' + folder)
+            frame = imread(frames_path + '/' + frame_name)
             # Convert to the PIL.Image format 
             frames.append(Image.fromarray(np.asarray(frame)))
         except Exception as e:
@@ -150,7 +153,18 @@ def calc_auc(predicted_path, gt_path):
     plt.savefig("dummy_name.png")
     return metrics.roc_auc_score(gt_npys_concatinated, predicted_npys_concatinated)
 
+
+def assert_no_files_end_with_empty_line(path):
+    for file in os.listdir(path):
+        with open(path + '/' + file, "r") as f:
+            lines = f.readlines()
+            if not lines:
+                continue
+            if lines[-1].strip() == '':
+                return False
+    return True 
     
+
 if __name__ == "__main__":
     # convert_frames_to_mp4("Video_ChatCaptioner/stc/shanghai_tech_dataset/testing")
     # wirte_stc_csv_file(folder_name="Video_ChatCaptioner/stc/shanghai_tech_dataset/testing", csv_file_name="videos.csv")
@@ -163,6 +177,8 @@ if __name__ == "__main__":
     # folder = 'output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/captions'
     # for file in os.listdir(folder):
     #     remove_last_empty_line(folder + '/' + file)
+    
+    # print(assert_no_files_end_with_empty_line(folder))
     predicted_npys = 'output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/npys'
     test_frame_mask = 'Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/test_frame_mask'
     a = calc_auc(predicted_npys, test_frame_mask)

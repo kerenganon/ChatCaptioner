@@ -89,7 +89,4 @@ def main():
 
 
 if __name__ == "__main__":
-    data = np.load(
-        "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/test_frame_mask/01_0014.npy"
-    )
     main()
