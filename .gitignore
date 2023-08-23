@@ -7,8 +7,12 @@ datasets
 datasets_archive
 experiments
 __pycache__
+LAVIS/**
+node_modules/**
 # data
 Video_ChatCaptioner/stc/
 # output
 Video_ChatCaptioner/output
 output/**
+package-lock.json
+package.json

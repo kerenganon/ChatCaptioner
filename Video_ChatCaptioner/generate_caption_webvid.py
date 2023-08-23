@@ -7,10 +7,14 @@ import yaml
 import torch
 from PIL import Image
 import csv
-from helper_methods import save_image_with_title, get_testing_numpy_frames
+from helper_methods import save_image_with_title, get_testing_numpy_frames, call_instruct_blip
 
 
-from chatcaptioner.video_chat import set_openai_key, caption_for_video
+from chatcaptioner.video_chat import (
+    set_openai_key,
+    caption_for_video,
+    caption_without_prompt,
+)
 from chatcaptioner.blip2 import Blip2
 from chatcaptioner.utils import RandomSampledDataset, plot_img, print_info
 from chatcaptioner.video_reader import (
@@ -20,20 +24,26 @@ from chatcaptioner.video_reader import (
 )
 from matplotlib import pyplot as plt
 from matplotlib import image as mpimg
+from instruct_blip_inference import InstructBlipInferencer
+import asyncio
 
 
 FRAME_FOLDER = sys.argv[1]
 CAPTION_FILE = sys.argv[2]
 OUTPUT_FOLDER = sys.argv[3]
 VIDEO_LIMIT = int(sys.argv[4])
-SAVE_FRAME_WITH_CAPPTION = False
+SAVE_FRAME_WITH_CAPTION = False
+CAPTION_WITHOUT_PROMPT = False
+USE_INSTRUCT_BLIP = True
 # VIDEO_FOLDER = "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos"
 # CAPTION_FILE = "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/videos.csv"
 # OUTPUT_FOLDER = "Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/output/"
-# VIDEO_LIMIT = 1
+VIDEO_LIMIT = 1
 
-
-blip2s = {"FlanT5 XXL": Blip2("FlanT5 XXL", device_id=0, bit8=True)}
+if USE_INSTRUCT_BLIP:
+    instruct_blip_inferencer = InstructBlipInferencer()
+else:
+    blip2s = {"FlanT5 XXL": Blip2("FlanT5 XXL", device_id=0, bit8=True)}
 
 
 data_file = {}
@@ -96,30 +106,46 @@ for sample in frames_list:
     video_id = sample["video_id"]
     features = sample["features"]
     output = sample["annotation"]["folder"]
+    frames_path = sample["frames_path"]
     print("captioning video_id: " + video_id)
-    if not os.path.exists(OUTPUT_FOLDER + output):
+    if CAPTION_WITHOUT_PROMPT:
+        output = output.replace("captions", "captions_without_prompt_v2")
+    if USE_INSTRUCT_BLIP:
+        output = output.replace("captions", "captions_with_instruct_blip_v2")
+    if not os.path.exists(OUTPUT_FOLDER + '/' + output):
         os.makedirs(OUTPUT_FOLDER + output)
-    with open(OUTPUT_FOLDER + output + "/" + video_id + ".txt", "w") as f:
+    with open(OUTPUT_FOLDER + '/' + output + ".txt", "w") as f:
         for i, feat in enumerate(features):
+            sub_summaries = ''
             try:
-                sub_summaries = caption_for_video(
-                    blip2s["FlanT5 XXL"],
-                    [feat],
-                    print_mode="no",
-                    n_rounds=1,
-                    model="gpt-3.5-turbo",
-                )
+                if CAPTION_WITHOUT_PROMPT:
+                    sub_summaries = caption_without_prompt(
+                        blip2s["FlanT5 XXL"],
+                        [feat],
+                    )["BLIP2+OurPrompt"]["caption"]
+                elif USE_INSTRUCT_BLIP:
+                    # frame_path = frames_path + '/' + f"{i:03}" + '.jpg'
+                    sub_summaries = instruct_blip_inferencer.call_instruct_blip(feat)
+
+                else:
+                    sub_summaries = caption_for_video(
+                        blip2s["FlanT5 XXL"],
+                        [feat],
+                        print_mode="no",
+                        n_rounds=1,
+                        model="gpt-3.5-turbo",
+                    )["BLIP2+OurPrompt"]["caption"]
             except Exception as e:
                 print("exception thrown: " + str(e))
-            f.write(
-                "Frame: "
-                + str(i)
-                + ": "
-                + sub_summaries["BLIP2+OurPrompt"]["caption"]
-                + "\n"
+            frame_desc = (
+                "Frame: " + str(i) + ": " + sub_summaries
             )
+            if i != len(features) - 1:
+                # new line is added as long as we're not at the last line
+                frame_desc += '\n'
+            f.write(frame_desc)
 
-            if SAVE_FRAME_WITH_CAPPTION:
+            if SAVE_FRAME_WITH_CAPTION:
                 save_image_with_title(
                     pil_image=feat,
                     title_text=sub_summaries["BLIP2+OurPrompt"]["caption"],

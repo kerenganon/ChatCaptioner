@@ -37,10 +37,26 @@
             "justMyCode": true,
             "args": [
                 "-c",
-                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/captions",
+                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/captions_with_instruct_blip",
                 "-o",
-                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/npys"
+                "output/Video_ChatCaptioner/stc/shanghai_tech_dataset/testing/npys_with_instruct_blip_without_ppl_detection"
             ]
+        }, 
+        {
+            "name": "Pyhton: Video_ChatCaptioner/plotting_utils.py",
+            "type": "python",
+            "request": "launch",
+            "program": "Video_ChatCaptioner/plotting_utils.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Pyhton: Video_ChatCaptioner/visualizer.py",
+            "type": "python",
+            "request": "launch",
+            "program": "Video_ChatCaptioner/visualizer.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

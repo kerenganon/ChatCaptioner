@@ -178,6 +178,7 @@ def ask_questions(img, blip2, model, n_rounds=10,max_frame_number=1000, max_gpt_
     questions = []
     answers = []
     total_tokens = 0
+    # KEREN: LLM prompt
     QUESTION_INSTRUCTION_ADAPT = QUESTION_INSTRUCTION %(str(len(img)),str(len(img)))
     SUB_QUESTION_INSTRUCTION_ADAPT = SUB_QUESTION_INSTRUCTION%str(len(img))
     # print(QUESTION_INSTRUCTION)    
@@ -354,3 +355,11 @@ def caption_for_video(blip2, video, model, n_rounds=30, n_blip2_context=0, print
     
     return results
 
+
+def caption_without_prompt(blip2, frame):
+    results = {}
+    answer = blip2.caption(frame)
+    results['BLIP2+OurPrompt'] = {'caption': answer}
+
+    
+    return results

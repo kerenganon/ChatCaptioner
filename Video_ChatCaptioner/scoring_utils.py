@@ -4,8 +4,8 @@ import numpy as np
 from scipy.ndimage import gaussian_filter1d
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
-from dataset import shanghaitech_hr_skip
 
+SHANGHAITECH_HR_SKIP = [(1, 130), (1, 135), (1, 136), (6, 144), (6, 145), (12, 152)]
 
 class bcolors:
     HEADER = '\033[95m'
@@ -18,6 +18,12 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def shanghaitech_hr_skip(shanghaitech_hr, scene_id, clip_id):
+    if not shanghaitech_hr:
+        return shanghaitech_hr
+    if (int(scene_id), int(clip_id)) in SHANGHAITECH_HR_SKIP:
+        return True
+    return False
 
 def score_dataset(score, metadata, args=None):
     gt_arr, scores_arr = get_dataset_scores(score, metadata, args=args)
